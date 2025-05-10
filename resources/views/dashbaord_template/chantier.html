@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Chantiers | Suivi du Pointage des Collaborateurs sur Chantier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 bg-primary-800 text-white w-64 transform transition-transform duration-150 ease-in lg:translate-x-0 -translate-x-full" id="sidebar">
+        <div class="flex items-center justify-between p-4 border-b border-primary-700">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-clock text-2xl"></i>
+                <span class="text-xl font-semibold">Suivi Pointage</span>
+            </div>
+            <button class="lg:hidden text-white focus:outline-none" id="closeSidebar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <nav class="mt-5">
+            <a href="index.html" class="flex items-center py-3 px-4 text-white bg-primary-700">
+                <i class="fas fa-tachometer-alt w-6"></i>
+                <span>Tableau de bord</span>
+            </a>
+            <a href="gestion-utilisateur.html" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-users w-6"></i>
+                <span>Gestion Utilisateurs</span>
+            </a>
+            <a href="pointage.html" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-clipboard-check w-6"></i>
+                <span>Pointages</span>
+            </a>
+            <a href="chantier.html" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-building w-6"></i>
+                <span>Chantiers</span>
+            </a>
+            <a href="rapport.html" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-chart-bar w-6"></i>
+                <span>Rapports</span>
+            </a>
+            <a href="#" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-cog w-6"></i>
+                <span>Paramètres</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64 transition-all duration-150 ease-in" id="main">
+        <!-- Top Navigation -->
+        <header class="bg-white shadow-md">
+            <div class="flex items-center justify-between p-4">
+                <button class="lg:hidden focus:outline-none" id="openSidebar">
+                    <i class="fas fa-bars text-primary-800"></i>
+                </button>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button class="focus:outline-none">
+                            <i class="fas fa-bell text-gray-500"></i>
+                            <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Profile" class="w-8 h-8 rounded-full">
+                        <span class="hidden md:inline-block">Directeur Technique</span>
+                        <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Chantier Content -->
+        <main class="p-6">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Gestion des Chantiers</h1>
+                <p class="text-gray-600">Créer, modifier et suivre les chantiers</p>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
+                        <div class="relative">
+                            <input type="text" id="search" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border" placeholder="Nom, adresse, chef de projet...">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                        <select id="status" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border">
+                            <option value="">Tous les statuts</option>
+                            <option value="en_cours">En cours</option>
+                            <option value="planifie">Planifié</option>
+                            <option value="termine">Terminé</option>
+                            <option value="suspendu">Suspendu</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="chef_projet" class="block text-sm font-medium text-gray-700 mb-1">Chef de Projet</label>
+                        <select id="chef_projet" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border">
+                            <option value="">Tous les chefs de projet</option>
+                            <option value="1">Mohammed El Amrani</option>
+                            <option value="2">Fatima Zahra</option>
+                            <option value="3">Karim Tazi</option>
+                            <option value="4">Nadia Mansouri</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="flex flex-wrap gap-4 mb-6">
+                <button class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md flex items-center" id="openChantierModal">
+                    <i class="fas fa-plus mr-2"></i> Nouveau Chantier
+                </button>
+                <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md flex items-center">
+                    <i class="fas fa-file-excel mr-2"></i> Exporter Excel
+                </button>
+                <button class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md flex items-center">
+                    <i class="fas fa-file-pdf mr-2"></i> Exporter PDF
+                </button>
+                <button class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md flex items-center">
+                    <i class="fas fa-sync-alt mr-2"></i> Actualiser
+                </button>
+            </div>
+
+            <!-- Chantier Form Modal -->
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden" id="chantierModal">
+                <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Nouveau Chantier</h3>
+                            <button class="text-gray-500 hover:text-gray-700 focus:outline-none" id="closeChantierModal">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <form>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label for="nom_chantier" class="block text-sm font-medium text-gray-700 mb-1">Nom du Chantier</label>
+                                    <input type="text" id="nom_chantier" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border">
+                                </div>
+                                <div>
+                                    <label for="type_chantier" class="block text-sm font-medium text-gray-700 mb-1">Type de Chantier</label>
+                                    <select id="type_chantier" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border">
+                                        <option value="">Sélectionner un type</option>
+                                        <option value="residentiel">Résidentiel</option>
+                                        <option value="commercial">Commercial</option>
+                                        <option value="industriel">Industriel</option>
+                                        <option value="infrastructure">Infrastructure</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <label for="adresse" class="block text-sm font-medium text-gray-700 mb-1">Adresse</label>
+                                <input type="text" id="adresse" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border">
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                <div>
+                                    <label for="ville" class="block text-sm font-medium text-gray-700 mb-1">Ville</label>
+                                    <input type="text" id="ville" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border">
+                                </div>
+                                <div>
+                                    <label for="code_postal" class="block text-sm font-medium text-gray-700 mb-1">Code Postal</label>
+                                    <input type="text" id="code_postal" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border">
+                                </div>
+                                <div>
+                                    <label for="pays" class="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                                    <input type="text" id="pays" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border" value="Maroc">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label for="date_debut" class="block text-sm font-medium text-gray-700 mb-1">Date de début</label>
+                                    <div class="relative">
+                                        <input type="text" id="date_debut" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border" placeholder="JJ/MM/AAAA">
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                            <i class="fas fa-calendar-alt text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="date_fin_prevue" class="block text-sm font-medium text-gray-700 mb-1">Date de fin prévue</label>
+                                    <div class="relative">
+                                        <input type="text" id="date_fin_prevue" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border" placeholder="JJ/MM/AAAA">
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                            <i class="fas fa-calendar-alt text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label for="chef_projet" class="block text-sm font-medium text-gray-700 mb-1">Chef de Projet</label>
+                                    <select id="chef_projet_modal" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border">
+                                        <option value="">Sélectionner un chef de projet</option>
+                                        <option value="1">Mohammed El Amrani</option>
+                                        <option value="2">Fatima Zahra</option>
+                                        <option value="3">Karim Tazi</option>
+                                        <option value="4">Nadia Mansouri</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="statut_chantier" class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                                    <select id="statut_chantier" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border">
+                                        <option value="planifie">Planifié</option>
+                                        <option value="en_cours">En cours</option>
+                                        <option value="suspendu">Suspendu</option>
+                                        <option value="termine">Terminé</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <label for="budget" class="block text-sm font-medium text-gray-700 mb-1">Budget (MAD)</label>
+                                <input type="number" id="budget" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border">
+                            </div>
+
+                            <div class="mb-6">
+                                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea id="description" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border" placeholder="Description du chantier..."></textarea>
+                            </div>
+
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md" id="cancelChantierModal">
+                                    Annuler
+                                </button>
+                                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md">
+                                    Enregistrer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chantiers Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Chantier Card 1 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" alt="Résidence Les Oliviers" class="w-full h-48 object-cover">
+                        <div class="absolute top-0 right-0 mt-2 mr-2">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">En cours</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">Résidence Les Oliviers</h3>
+                        <p class="text-sm text-gray-600 mb-3">Casablanca, Quartier Anfa</p>
+                        <div class="flex items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg" alt="">
+                            </div>
+                            <div class="ml-2">
+                                <p class="text-sm font-medium text-gray-900">Mohammed El Amrani</p>
+                                <p class="text-xs text-gray-500">Chef de Projet</p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Progression</span>
+                                <span>65%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary-600 h-2 rounded-full" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Date de début</p>
+                                <p class="text-sm font-medium">15/01/2025</p>
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Date de fin prévue</p>
+                                <p class="text-sm font-medium">30/06/2025</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Collaborateurs</p>
+                                <p class="text-sm font-medium">24</p>
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Heures travaillées</p>
+                                <p class="text-sm font-medium">3,245</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between">
+                            <button class="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                                Voir détails
+                            </button>
+                            <div class="flex space-x-2">
+                                <button class="text-primary-600 hover:text-primary-900">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chantier Card 2 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" alt="Tour Horizon" class="w-full h-48 object-cover">
+                        <div class="absolute top-0 right-0 mt-2 mr-2">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">En cours</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">Tour Horizon</h3>
+                        <p class="text-sm text-gray-600 mb-3">Rabat, Centre-ville</p>
+                        <div class="flex items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/4.jpg" alt="">
+                            </div>
+                            <div class="ml-2">
+                                <p class="text-sm font-medium text-gray-900">Fatima Zahra</p>
+                                <p class="text-xs text-gray-500">Chef de Projet</p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Progression</span>
+                                <span>40%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary-600 h-2 rounded-full" style="width: 40%"></div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Date de début</p>
+                                <p class="text-sm font-medium">10/02/2025</p>
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Date de fin prévue</p>
+                                <p class="text-sm font-medium">15/09/2025</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Collaborateurs</p>
+                                <p class="text-sm font-medium">18</p>
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Heures travaillées</p>
+                                <p class="text-sm font-medium">2,180</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between">
+                            <button class="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                                Voir détails
+                            </button>
+                            <div class="flex space-x-2">
+                                <button class="text-primary-600 hover:text-primary-900">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chantier Card 3 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1555652736-e92021d28a39?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" alt="Centre Commercial Atlas" class="w-full h-48 object-cover">
+                        <div class="absolute top-0 right-0 mt-2 mr-2">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">En cours</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">Centre Commercial Atlas</h3>
+                        <p class="text-sm text-gray-600 mb-3">Marrakech, Route de Casablanca</p>
+                        <div class="flex items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/3.jpg" alt="">
+                            </div>
+                            <div class="ml-2">
+                                <p class="text-sm font-medium text-gray-900">Karim Tazi</p>
+                                <p class="text-xs text-gray-500">Chef de Projet</p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Progression</span>
+                                <span>25%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary-600 h-2 rounded-full" style="width: 25%"></div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Date de début</p>
+                                <p class="text-sm font-medium">05/03/2025</p>
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Date de fin prévue</p>
+                                <p class="text-sm font-medium">20/12/2025</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Collaborateurs</p>
+                                <p class="text-sm font-medium">32</p>
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Heures travaillées</p>
+                                <p class="text-sm font-medium">1,560</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between">
+                            <button class="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                                Voir détails
+                            </button>
+                            <div class="flex space-x-2">
+                                <button class="text-primary-600 hover:text-primary-900">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chantier Card 4 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" alt="Hôpital Central" class="w-full h-48 object-cover">
+                        <div class="absolute top-0 right-0 mt-2 mr-2">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Planifié</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">Hôpital Central</h3>
+                        <p class="text-sm text-gray-600 mb-3">Tanger, Zone Hospitalière</p>
+                        <div class="flex items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/6.jpg" alt="">
+                            </div>
+                            <div class="ml-2">
+                                <p class="text-sm font-medium text-gray-900">Nadia Mansouri</p>
+                                <p class="text-xs text-gray-500">Chef de Projet</p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Progression</span>
+                                <span>0%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary-600 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Date de début</p>
+                                <p class="text-sm font-medium">15/05/2025</p>
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Date de fin prévue</p>
+                                <p class="text-sm font-medium">30/08/2026</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Collaborateurs</p>
+                                <p class="text-sm font-medium">0</p>
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Heures travaillées</p>
+                                <p class="text-sm font-medium">0</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between">
+                            <button class="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                                Voir détails
+                            </button>
+                            <div class="flex space-x-2">
+                                <button class="text-primary-600 hover:text-primary-900">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chantier Card 5 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1590725121839-892b458a74fe?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" alt="Parc Industriel" class="w-full h-48 object-cover">
+                        <div class="absolute top-0 right-0 mt-2 mr-2">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Suspendu</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">Parc Industriel</h3>
+                        <p class="text-sm text-gray-600 mb-3">Agadir, Zone Industrielle</p>
+                        <div class="flex items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg" alt="">
+                            </div>
+                            <div class="ml-2">
+                                <p class="text-sm font-medium text-gray-900">Mohammed El Amrani</p>
+                                <p class="text-xs text-gray-500">Chef de Projet</p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Progression</span>
+                                <span>35%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary-600 h-2 rounded-full" style="width: 35%"></div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Date de début</p>
+                                <p class="text-sm font-medium">20/12/2024</p>
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Date de fin prévue</p>
+                                <p class="text-sm font-medium">10/10/2025</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Collaborateurs</p>
+                                <p class="text-sm font-medium">15</p>
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Heures travaillées</p>
+                                <p class="text-sm font-medium">1,245</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between">
+                            <button class="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                                Voir détails
+                            </button>
+                            <div class="flex space-x-2">
+                                <button class="text-primary-600 hover:text-primary-900">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chantier Card 6 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" alt="Villa Royale" class="w-full h-48 object-cover">
+                        <div class="absolute top-0 right-0 mt-2 mr-2">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">Terminé</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">Villa Royale</h3>
+                        <p class="text-sm text-gray-600 mb-3">Fès, Quartier Résidentiel</p>
+                        <div class="flex items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/4.jpg" alt="">
+                            </div>
+                            <div class="ml-2">
+                                <p class="text-sm font-medium text-gray-900">Fatima Zahra</p>
+                                <p class="text-xs text-gray-500">Chef de Projet</p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Progression</span>
+                                <span>100%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary-600 h-2 rounded-full" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Date de début</p>
+                                <p class="text-sm font-medium">05/09/2024</p>
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Date de fin</p>
+                                <p class="text-sm font-medium">15/01/2025</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Collaborateurs</p>
+                                <p class="text-sm font-medium">8</p>
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded-md">
+                                <p class="text-xs text-gray-500">Heures travaillées</p>
+                                <p class="text-sm font-medium">2,850</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between">
+                            <button class="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                                Voir détails
+                            </button>
+                            <div class="flex space-x-2">
+                                <button class="text-primary-600 hover:text-primary-900">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <span class="text-sm text-gray-700">
+                        Affichage de <span class="font-medium">1</span> à <span class="font-medium">6</span> sur <span class="font-medium">8</span> résultats
+                    </span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button class="bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md">
+                        Précédent
+                    </button>
+                    <button class="bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md">
+                        Suivant
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Sidebar Toggle
+        document.getElementById('openSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('-translate-x-full');
+        });
+        
+        document.getElementById('closeSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+        });
+
+        // Date Pickers
+        flatpickr("#date_debut", {
+            dateFormat: "d/m/Y"
+        });
+
+        flatpickr("#date_fin_prevue", {
+            dateFormat: "d/m/Y"
+        });
+
+        // Chantier Modal Toggle
+        const chantierModal = document.getElementById('chantierModal');
+        const openChantierModalBtn = document.getElementById('openChantierModal');
+        const closeChantierModalBtn = document.getElementById('closeChantierModal');
+        const cancelChantierModalBtn = document.getElementById('cancelChantierModal');
+
+        openChantierModalBtn.addEventListener('click', function() {
+            chantierModal.classList.remove('hidden');
+        });
+
+        closeChantierModalBtn.addEventListener('click', function() {
+            chantierModal.classList.add('hidden');
+        });
+
+        cancelChantierModalBtn.addEventListener('click', function() {
+            chantierModal.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>

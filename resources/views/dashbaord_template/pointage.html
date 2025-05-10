@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pointage des Collaborateurs | Suivi du Pointage des Collaborateurs sur Chantier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 bg-primary-800 text-white w-64 transform transition-transform duration-150 ease-in lg:translate-x-0 -translate-x-full" id="sidebar">
+        <div class="flex items-center justify-between p-4 border-b border-primary-700">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-clock text-2xl"></i>
+                <span class="text-xl font-semibold">Suivi Pointage</span>
+            </div>
+            <button class="lg:hidden text-white focus:outline-none" id="closeSidebar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <nav class="mt-5">
+            <a href="index.html" class="flex items-center py-3 px-4 text-white bg-primary-700">
+                <i class="fas fa-tachometer-alt w-6"></i>
+                <span>Tableau de bord</span>
+            </a>
+            <a href="gestion-utilisateur.html" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-users w-6"></i>
+                <span>Gestion Utilisateurs</span>
+            </a>
+            <a href="pointage.html" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-clipboard-check w-6"></i>
+                <span>Pointages</span>
+            </a>
+            <a href="chantier.html" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-building w-6"></i>
+                <span>Chantiers</span>
+            </a>
+            <a href="rapport.html" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-chart-bar w-6"></i>
+                <span>Rapports</span>
+            </a>
+            <a href="#" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-cog w-6"></i>
+                <span>Paramètres</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64 transition-all duration-150 ease-in" id="main">
+        <!-- Top Navigation -->
+        <header class="bg-white shadow-md">
+            <div class="flex items-center justify-between p-4">
+                <button class="lg:hidden focus:outline-none" id="openSidebar">
+                    <i class="fas fa-bars text-primary-800"></i>
+                </button>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button class="focus:outline-none">
+                            <i class="fas fa-bell text-gray-500"></i>
+                            <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Profile" class="w-8 h-8 rounded-full">
+                        <span class="hidden md:inline-block">Chef de Chantier</span>
+                        <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Pointage Content -->
+        <main class="p-6">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Pointage des Collaborateurs</h1>
+                <p class="text-gray-600">Enregistrement et gestion des heures travaillées</p>
+            </div>
+
+            <!-- Date and Site Selection -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                        <div class="relative">
+                            <input type="text" id="date" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border" placeholder="Sélectionner une date">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-calendar-alt text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="chantier" class="block text-sm font-medium text-gray-700 mb-1">Chantier</label>
+                        <select id="chantier" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border">
+                            <option value="">Sélectionner un chantier</option>
+                            <option value="1" selected>Résidence Les Oliviers</option>
+                            <option value="2">Tour Horizon</option>
+                            <option value="3">Centre Commercial Atlas</option>
+                            <option value="4">Hôpital Central</option>
+                            <option value="5">Parc Industriel</option>
+                            <option value="6">Villa Royale</option>
+                            <option value="7">École Moderne</option>
+                            <option value="8">Stade Municipal</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="equipe" class="block text-sm font-medium text-gray-700 mb-1">Équipe</label>
+                        <select id="equipe" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border">
+                            <option value="">Toutes les équipes</option>
+                            <option value="1" selected>Équipe A</option>
+                            <option value="2">Équipe B</option>
+                            <option value="3">Équipe C</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="flex flex-wrap gap-4 mb-6">
+                <button class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md flex items-center">
+                    <i class="fas fa-plus mr-2"></i> Nouveau Pointage
+                </button>
+                <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md flex items-center">
+                    <i class="fas fa-file-excel mr-2"></i> Exporter Excel
+                </button>
+                <button class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md flex items-center">
+                    <i class="fas fa-file-pdf mr-2"></i> Exporter PDF
+                </button>
+                <button class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md flex items-center">
+                    <i class="fas fa-sync-alt mr-2"></i> Actualiser
+                </button>
+            </div>
+
+            <!-- Pointage Form Modal -->
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden" id="pointageModal">
+                <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Nouveau Pointage</h3>
+                            <button class="text-gray-500 hover:text-gray-700 focus:outline-none" id="closeModal">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <form>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label for="collaborateur" class="block text-sm font-medium text-gray-700 mb-1">Collaborateur</label>
+                                    <select id="collaborateur" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border">
+                                        <option value="">Sélectionner un collaborateur</option>
+                                        <option value="1">Ahmed Benali</option>
+                                        <option value="2">Fatima Zahra</option>
+                                        <option value="3">Karim Tazi</option>
+                                        <option value="4">Youssef Alami</option>
+                                        <option value="5">Nadia Mansouri</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="modalDate" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                                    <div class="relative">
+                                        <input type="text" id="modalDate" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border" placeholder="Sélectionner une date">
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                            <i class="fas fa-calendar-alt text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label for="heureArrivee" class="block text-sm font-medium text-gray-700 mb-1">Heure d'arrivée</label>
+                                    <div class="relative">
+                                        <input type="text" id="heureArrivee" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border" placeholder="HH:MM">
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                            <i class="fas fa-clock text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="heureDepart" class="block text-sm font-medium text-gray-700 mb-1">Heure de départ</label>
+                                    <div class="relative">
+                                        <input type="text" id="heureDepart" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border" placeholder="HH:MM">
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                            <i class="fas fa-clock text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <label for="typeJour" class="block text-sm font-medium text-gray-700 mb-1">Type de jour</label>
+                                <div class="flex space-x-4">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="typeJour" value="normal" class="form-radio text-primary-600" checked>
+                                        <span class="ml-2">Jour normal</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="typeJour" value="ferie" class="form-radio text-primary-600">
+                                        <span class="ml-2">Jour férié</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Détail des heures</label>
+                                <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
+                                    <div class="grid grid-cols-2 gap-4 mb-2">
+                                        <div>
+                                            <span class="text-sm text-gray-500">Heures normales (08h-17h):</span>
+                                            <span class="text-sm font-medium text-gray-900 ml-2" id="heuresNormales">0.00</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-sm text-gray-500">HS (06h-08h & 17h-21h, 1.25x):</span>
+                                            <span class="text-sm font-medium text-gray-900 ml-2" id="heuresSupp125">0.00</span>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <span class="text-sm text-gray-500">HS (21h-06h, 1.5x):</span>
+                                            <span class="text-sm font-medium text-gray-900 ml-2" id="heuresSupp150">0.00</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-sm text-gray-500">Total des heures:</span>
+                                            <span class="text-sm font-medium text-gray-900 ml-2" id="totalHeures">0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <label for="commentaire" class="block text-sm font-medium text-gray-700 mb-1">Commentaire</label>
+                                <textarea id="commentaire" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 py-2 px-3 border" placeholder="Ajouter un commentaire (optionnel)"></textarea>
+                            </div>
+
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md" id="cancelModal">
+                                    Annuler
+                                </button>
+                                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md">
+                                    Enregistrer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pointage Table -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Collaborateur</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fonction</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Arrivée</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Départ</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HN</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HS (1.25x)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HS (1.5x)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/2.jpg" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Ahmed Benali</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Maçon</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">07:45</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">17:30</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">9.00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">0.75</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">0.00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">9.75</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Validé</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button class="text-primary-600 hover:text-primary-900">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/3.jpg" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Fatima Zahra</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Électricienne</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">08:00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">18:45</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">9.00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">1.75</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">0.00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">10.75</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">En attente</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button class="text-primary-600 hover:text-primary-900">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/4.jpg" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Karim Tazi</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Plombier</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">08:15</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">17:00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">8.75</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">0.00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">0.00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">8.75</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Validé</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button class="text-primary-600 hover:text-primary-900">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/5.jpg" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Youssef Alami</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Peintre</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">07:30</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">19:00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">9.00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">2.00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">0.50</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">11.50</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">À vérifier</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button class="text-primary-600 hover:text-primary-900">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/6.jpg" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Nadia Mansouri</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Architecte</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">09:00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">18:00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">8.00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">1.00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">0.00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">9.00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Validé</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button class="text-primary-600 hover:text-primary-900">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <span class="text-sm text-gray-700">
+                        Affichage de <span class="font-medium">1</span> à <span class="font-medium">5</span> sur <span class="font-medium">24</span> résultats
+                    </span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button class="bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md">
+                        Précédent
+                    </button>
+                    <button class="bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md">
+                        Suivant
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Résumé du Pointage - Résidence Les Oliviers (25/03/2025)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-blue-50 p-4 rounded-md border border-blue-200">
+                        <p class="text-sm text-blue-700 mb-1">Total Collaborateurs</p>
+                        <p class="text-2xl font-bold text-blue-800">5</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-md border border-green-200">
+                        <p class="text-sm text-green-700 mb-1">Heures Normales</p>
+                        <p class="text-2xl font-bold text-green-800">43.75</p>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-md border border-yellow-200">
+                        <p class="text-sm text-yellow-700 mb-1">Heures Supp. (1.25x)</p>
+                        <p class="text-2xl font-bold text-yellow-800">5.50</p>
+                    </div>
+                    <div class="bg-orange-50 p-4 rounded-md border border-orange-200">
+                        <p class="text-sm text-orange-700 mb-1">Heures Supp. (1.5x)</p>
+                        <p class="text-2xl font-bold text-orange-800">0.50</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Sidebar Toggle
+        document.getElementById('openSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('-translate-x-full');
+        });
+        
+        document.getElementById('closeSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+        });
+
+        // Date Picker
+        flatpickr("#date", {
+            dateFormat: "d/m/Y",
+            defaultDate: "25/03/2025"
+        });
+
+        flatpickr("#modalDate", {
+            dateFormat: "d/m/Y",
+            defaultDate: "25/03/2025"
+        });
+
+        // Time Pickers
+        flatpickr("#heureArrivee", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+            defaultHour: 8,
+            defaultMinute: 0
+        });
+
+        flatpickr("#heureDepart", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+            defaultHour: 17,
+            defaultMinute: 0
+        });
+
+        // Modal Toggle
+        const modal = document.getElementById('pointageModal');
+        const openModalBtn = document.querySelector('button:first-of-type');
+        const closeModalBtn = document.getElementById('closeModal');
+        const cancelModalBtn = document.getElementById('cancelModal');
+
+        openModalBtn.addEventListener('click', function() {
+            modal.classList.remove('hidden');
+        });
+
+        closeModalBtn.addEventListener('click', function() {
+            modal.classList.add('hidden');
+        });
+
+        cancelModalBtn.addEventListener('click', function() {
+            modal.classList.add('hidden');
+        });
+
+        // Calculate Hours
+        const heureArriveeInput = document.getElementById('heureArrivee');
+        const heureDepartInput = document.getElementById('heureDepart');
+        const typeJourInputs = document.querySelectorAll('input[name="typeJour"]');
+        
+        const heuresNormalesSpan = document.getElementById('heuresNormales');
+        const heuresSupp125Span = document.getElementById('heuresSupp125');
+        const heuresSupp150Span = document.getElementById('heuresSupp150');
+        const totalHeuresSpan = document.getElementById('totalHeures');
+
+        function calculateHours() {
+            const arrivee = heureArriveeInput.value;
+            const depart = heureDepartInput.value;
+            const typeJour = document.querySelector('input[name="typeJour"]:checked').value;
+            
+            if (!arrivee || !depart) return;
+            
+            const [arriveHour, arriveMin] = arrivee.split(':').map(Number);
+            const [departHour, departMin] = depart.split(':').map(Number);
+            
+            const arriveTime = arriveHour + arriveMin / 60;
+            const departTime = departHour + departMin / 60;
+            
+            let heuresNormales = 0;
+            let heuresSupp125 = 0;
+            let heuresSupp150 = 0;
+            
+            if (typeJour === 'normal') {
+                // Calculate normal hours (8h-17h)
+                const normalStart = Math.max(arriveTime, 8);
+                const normalEnd = Math.min(departTime, 17);
+                heuresNormales = Math.max(0, normalEnd - normalStart);
+                
+                // Calculate 1.25x hours (6h-8h & 17h-21h)
+                const supp125Start1 = Math.max(arriveTime, 6);
+                const supp125End1 = Math.min(departTime, 8);
+                const supp125Start2 = Math.max(arriveTime, 17);
+                const supp125End2 = Math.min(departTime, 21);
+                
+                heuresSupp125 = Math.max(0, supp125End1 - supp125Start1) + 
+                               Math.max(0, supp125End2 - supp125Start2);
+                
+                // Calculate 1.5x hours (21h-6h)
+                if (arriveTime < 6) {
+                    heuresSupp150 += Math.min(6, departTime) - arriveTime;
+                }
+                if (departTime > 21) {
+                    heuresSupp150 += departTime - 21;
+                }
+            } else { // Jour férié
+                // Calculate 1.5x hours (6h-21h)
+                const supp150Start = Math.max(arriveTime, 6);
+                const supp150End = Math.min(departTime, 21);
+                heuresSupp150 += Math.max(0, supp150End - supp150Start);
+                
+                // Calculate 2.0x hours (21h-6h) - not shown in UI but calculated
+                let heuresSupp200 = 0;
+                if (arriveTime < 6) {
+                    heuresSupp200 += Math.min(6, departTime) - arriveTime;
+                }
+                if (departTime > 21) {
+                    heuresSupp200 += departTime - 21;
+                }
+                
+                // For display purposes, we'll add 2.0x hours to 1.5x
+                heuresSupp150 += heuresSupp200;
+            }
+            
+            const totalHeures = heuresNormales + heuresSupp125 + heuresSupp150;
+            
+            heuresNormalesSpan.textContent = heuresNormales.toFixed(2);
+            heuresSupp125Span.textContent = heuresSupp125.toFixed(2);
+            heuresSupp150Span.textContent = heuresSupp150.toFixed(2);
+            totalHeuresSpan.textContent = totalHeures.toFixed(2);
+        }
+
+        heureArriveeInput.addEventListener('change', calculateHours);
+        heureDepartInput.addEventListener('change', calculateHours);
+        typeJourInputs.forEach(input => {
+            input.addEventListener('change', calculateHours);
+        });
+    </script>
+</body>
+</html>

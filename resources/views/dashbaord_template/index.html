@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi du Pointage des Collaborateurs sur Chantier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 bg-primary-800 text-white w-64 transform transition-transform duration-150 ease-in lg:translate-x-0 -translate-x-full" id="sidebar">
+        <div class="flex items-center justify-between p-4 border-b border-primary-700">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-clock text-2xl"></i>
+                <span class="text-xl font-semibold">Suivi Pointage</span>
+            </div>
+            <button class="lg:hidden text-white focus:outline-none" id="closeSidebar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <nav class="mt-5">
+            <a href="index.html" class="flex items-center py-3 px-4 text-white bg-primary-700">
+                <i class="fas fa-tachometer-alt w-6"></i>
+                <span>Tableau de bord</span>
+            </a>
+            <a href="gestion-utilisateur.html" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-users w-6"></i>
+                <span>Gestion Utilisateurs</span>
+            </a>
+            <a href="pointage.html" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-clipboard-check w-6"></i>
+                <span>Pointages</span>
+            </a>
+            <a href="chantier.html" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-building w-6"></i>
+                <span>Chantiers</span>
+            </a>
+            <a href="rapport.html" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-chart-bar w-6"></i>
+                <span>Rapports</span>
+            </a>
+            <a href="#" class="flex items-center py-3 px-4 text-white hover:bg-primary-700">
+                <i class="fas fa-cog w-6"></i>
+                <span>Paramètres</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64 transition-all duration-150 ease-in" id="main">
+        <!-- Top Navigation -->
+        <header class="bg-white shadow-md">
+            <div class="flex items-center justify-between p-4">
+                <button class="lg:hidden focus:outline-none" id="openSidebar">
+                    <i class="fas fa-bars text-primary-800"></i>
+                </button>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button class="focus:outline-none">
+                            <i class="fas fa-bell text-gray-500"></i>
+                            <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Profile" class="w-8 h-8 rounded-full">
+                        <span class="hidden md:inline-block">Admin Système</span>
+                        <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="p-6">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Tableau de Bord</h1>
+                <p class="text-gray-600">Vue d'ensemble du suivi de pointage</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500">Collaborateurs Actifs</p>
+                            <h3 class="text-3xl font-bold text-gray-800">124</h3>
+                        </div>
+                        <div class="bg-blue-100 p-3 rounded-full">
+                            <i class="fas fa-users text-primary-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-green-500 text-sm mt-4"><i class="fas fa-arrow-up"></i> +5% depuis le mois dernier</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500">Heures Travaillées</p>
+                            <h3 class="text-3xl font-bold text-gray-800">1,842</h3>
+                        </div>
+                        <div class="bg-green-100 p-3 rounded-full">
+                            <i class="fas fa-clock text-green-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-green-500 text-sm mt-4"><i class="fas fa-arrow-up"></i> +12% depuis la semaine dernière</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500">Heures Supplémentaires</p>
+                            <h3 class="text-3xl font-bold text-gray-800">246</h3>
+                        </div>
+                        <div class="bg-yellow-100 p-3 rounded-full">
+                            <i class="fas fa-hourglass-half text-yellow-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-red-500 text-sm mt-4"><i class="fas fa-arrow-up"></i> +18% depuis la semaine dernière</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500">Chantiers Actifs</p>
+                            <h3 class="text-3xl font-bold text-gray-800">8</h3>
+                        </div>
+                        <div class="bg-purple-100 p-3 rounded-full">
+                            <i class="fas fa-building text-purple-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-500 text-sm mt-4">Inchangé depuis le mois dernier</p>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Heures Travaillées par Chantier</h3>
+                    <div class="h-64 flex items-center justify-center">
+                        <canvas id="projectChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Répartition des Heures</h3>
+                    <div class="h-64 flex items-center justify-center">
+                        <canvas id="hoursChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Time Entries -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Pointages Récents</h3>
+                    <a href="#" class="text-primary-600 hover:text-primary-800">Voir tout</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Collaborateur</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chantier</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Arrivée</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Départ</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Heures</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/2.jpg" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Ahmed Benali</div>
+                                            <div class="text-sm text-gray-500">Maçon</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Résidence Les Oliviers</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">25/03/2025</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">07:45</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">17:30</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">9.75</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Validé</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/3.jpg" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Fatima Zahra</div>
+                                            <div class="text-sm text-gray-500">Électricienne</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Tour Horizon</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">25/03/2025</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">08:00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">18:45</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">10.75</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">En attente</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/4.jpg" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Karim Tazi</div>
+                                            <div class="text-sm text-gray-500">Plombier</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Résidence Les Oliviers</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">25/03/2025</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">08:15</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">17:00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">8.75</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Validé</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/5.jpg" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Youssef Alami</div>
+                                            <div class="text-sm text-gray-500">Peintre</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Centre Commercial Atlas</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">25/03/2025</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">07:30</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">19:00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">11.5</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">À vérifier</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/6.jpg" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Nadia Mansouri</div>
+                                            <div class="text-sm text-gray-500">Architecte</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Tour Horizon</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">25/03/2025</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">09:00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">18:00</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">9.0</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Validé</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Overtime and Absences -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Heures Supplémentaires à Valider</h3>
+                        <a href="#" class="text-primary-600 hover:text-primary-800">Voir tout</a>
+                    </div>
+                    <ul class="divide-y divide-gray-200">
+                        <li class="py-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/7.jpg" alt="">
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-900">Omar Kadiri</p>
+                                        <p class="text-sm text-gray-500">Tour Horizon - 24/03/2025</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-sm font-medium text-gray-900 mr-4">2.5h (1.25x)</span>
+                                    <button class="bg-green-500 text-white p-1 rounded-full hover:bg-green-600 focus:outline-none">
+                                        <i class="fas fa-check text-xs"></i>
+                                    </button>
+                                    <button class="bg-red-500 text-white p-1 rounded-full ml-2 hover:bg-red-600 focus:outline-none">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="py-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/8.jpg" alt="">
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-900">Samira Bennani</p>
+                                        <p class="text-sm text-gray-500">Résidence Les Oliviers - 24/03/2025</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-sm font-medium text-gray-900 mr-4">3.0h (1.5x)</span>
+                                    <button class="bg-green-500 text-white p-1 rounded-full hover:bg-green-600 focus:outline-none">
+                                        <i class="fas fa-check text-xs"></i>
+                                    </button>
+                                    <button class="bg-red-500 text-white p-1 rounded-full ml-2 hover:bg-red-600 focus:outline-none">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="py-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/9.jpg" alt="">
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-900">Rachid Moussaoui</p>
+                                        <p class="text-sm text-gray-500">Centre Commercial Atlas - 24/03/2025</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-sm font-medium text-gray-900 mr-4">1.5h (1.25x)</span>
+                                    <button class="bg-green-500 text-white p-1 rounded-full hover:bg-green-600 focus:outline-none">
+                                        <i class="fas fa-check text-xs"></i>
+                                    </button>
+                                    <button class="bg-red-500 text-white p-1 rounded-full ml-2 hover:bg-red-600 focus:outline-none">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Absences Récentes</h3>
+                        <a href="#" class="text-primary-600 hover:text-primary-800">Voir tout</a>
+                    </div>
+                    <ul class="divide-y divide-gray-200">
+                        <li class="py-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/10.jpg" alt="">
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-900">Hassan Benjelloun</p>
+                                        <p class="text-sm text-gray-500">Congé maladie - 22/03/2025 au 26/03/2025</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Justifié</span>
+                            </div>
+                        </li>
+                        <li class="py-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/11.jpg" alt="">
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-900">Leila Amrani</p>
+                                        <p class="text-sm text-gray-500">Congé annuel - 20/03/2025 au 27/03/2025</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Approuvé</span>
+                            </div>
+                        </li>
+                        <li class="py-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/12.jpg" alt="">
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-900">Mehdi Ouazzani</p>
+                                        <p class="text-sm text-gray-500">Absence - 25/03/2025</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Non justifié</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sidebar Toggle
+        document.getElementById('openSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('-translate-x-full');
+        });
+        
+        document.getElementById('closeSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+        });
+
+        // Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Project Hours Chart
+            const project  function() {
+            // Project Hours Chart
+            const projectCtx = document.getElementById('projectChart').getContext('2d');
+            const projectChart = new Chart(projectCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Résidence Les Oliviers', 'Tour Horizon', 'Centre Commercial Atlas', 'Hôpital Central', 'Parc Industriel', 'Villa Royale', 'École Moderne', 'Stade Municipal'],
+                    datasets: [{
+                        label: 'Heures Travaillées',
+                        data: [420, 380, 310, 290, 260, 230, 180, 150],
+                        backgroundColor: 'rgba(14, 165, 233, 0.7)',
+                        borderColor: 'rgba(14, 165, 233, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Hours Distribution Chart
+            const hoursCtx = document.getElementById('hoursChart').getContext('2d');
+            const hoursChart = new Chart(hoursCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Heures Normales', 'HS (1.25x)', 'HS (1.5x)', 'HS (2.0x)'],
+                    datasets: [{
+                        label: 'Répartition des Heures',
+                        data: [1600, 150, 80, 12],
+                        backgroundColor: [
+                            'rgba(14, 165, 233, 0.7)',
+                            'rgba(234, 179, 8, 0.7)',
+                            'rgba(249, 115, 22, 0.7)',
+                            'rgba(239, 68, 68, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(14, 165, 233, 1)',
+                            'rgba(234, 179, 8, 1)',
+                            'rgba(249, 115, 22, 1)',
+                            'rgba(239, 68, 68, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
