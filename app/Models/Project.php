@@ -20,6 +20,7 @@ class Project extends Model
         'end_date',
         'status',
         'manager_id',
+        'chef_id',
     ];
 
     protected $casts = [
@@ -35,6 +36,14 @@ class Project extends Model
     public function manager(): BelongsTo
     {
         return $this->belongsTo(User::class, 'manager_id');
+    }
+
+    /**
+     * Get the chef de chantier in charge of the project
+     */
+    public function chef(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'chef_id');
     }
 
     /**
@@ -89,5 +98,48 @@ class Project extends Model
             return "https://ui-avatars.com/api/?name=" . urlencode($this->manager->name) . "&background=random";
         }
         return "https://ui-avatars.com/api/?name=Non+Assigne&background=random";
+    }
+
+    /**
+     * The users that are assigned to the project.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'project_user');
+    }
+
+    /**
+     * Get chefs de chantier assigned to this project.
+     */
+    public function chefs()
+    {
+        return $this->belongsToMany(User::class, 'project_user')
+            ->whereHas('role', function($query) {
+                $query->where('role', 'pointage_editor');
+            });
+    }
+
+    /**
+     * Check if the project is active.
+     */
+    public function isActive()
+    {
+        return $this->status === 'active';
+    }
+
+    /**
+     * Check if the project is completed.
+     */
+    public function isCompleted()
+    {
+        return $this->status === 'completed';
+    }
+
+    /**
+     * Check if the project is on hold.
+     */
+    public function isOnHold()
+    {
+        return $this->status === 'on_hold';
     }
 }

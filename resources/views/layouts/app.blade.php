@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Suivi du Pointage des Collaborateurs sur Chantier')</title>
+    <title>{{ config('app.name', 'Laravel') }} | @yield('title', 'Dashboard')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -29,6 +29,50 @@
         }
     </script>
     @stack('styles')
+
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="//fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <!-- Custom Styles -->
+    <style>
+        /* Chef search specific styles */
+        .chef-search-results {
+            max-height: 250px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            width: 100%;
+        }
+        
+        .chef-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.75rem;
+            margin: 0.25rem;
+            background-color: #f3f4f6;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+        
+        .remove-chef, .remove-additional-chef {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            padding: 0.125rem 0.25rem;
+        }
+        
+        .remove-chef:hover, .remove-additional-chef:hover {
+            color: #ef4444;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <!-- Sidebar -->
@@ -59,6 +103,24 @@
                 <i class="fas fa-chart-bar w-6"></i>
                 <span>Rapports</span>
             </a>
+            
+            @if(Auth::user()->role && Auth::user()->role->role === 'superadmin' || 
+                Auth::user()->role && Auth::user()->role->role === 'hr_editor')
+            <a href="{{ route('users.index') }}" class="flex items-center py-3 px-4 text-white {{ request()->routeIs('users.*') ? 'bg-primary-700' : 'hover:bg-primary-700' }}">
+                <i class="fas fa-users w-6"></i>
+                <span>Utilisateurs</span>
+            </a>
+            <a href="{{ route('user-statuses.index') }}" class="flex items-center py-3 px-4 text-white {{ request()->routeIs('user-statuses.*') ? 'bg-primary-700' : 'hover:bg-primary-700' }}">
+                <i class="fas fa-user-tag w-6"></i>
+                <span>Statuts Utilisateurs</span>
+            </a>
+            @endif
+            
+            <a href="{{ route('overtimes.index') }}" class="flex items-center py-3 px-4 text-white {{ request()->routeIs('overtimes.*') ? 'bg-primary-700' : 'hover:bg-primary-700' }}">
+                <i class="fas fa-clock w-6"></i>
+                <span>Heures Supplémentaires</span>
+            </a>
+            
             <form method="POST" action="{{ route('logout') }}" class="mt-auto">
                 @csrf
                 <button type="submit" class="flex items-center w-full py-3 px-4 text-white hover:bg-primary-700">
@@ -99,6 +161,10 @@
         </main>
     </div>
 
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Base Scripts -->
     <script>
         // Sidebar toggle functionality
         const sidebar = document.getElementById('sidebar');
@@ -114,6 +180,8 @@
             sidebar.classList.add('-translate-x-full');
         });
     </script>
+    
     @stack('scripts')
+    @yield('scripts')
 </body>
 </html> 

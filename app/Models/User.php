@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -22,8 +23,8 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
-        'role',
         'address',
+        'user_status_id',
     ];
 
     /**
@@ -51,11 +52,113 @@ class User extends Authenticatable
         return $this->hasMany(TimeEntry::class);
     }
 
+    public function role(): HasOne
+    {
+        return $this->hasOne(Role::class);
+    }
+
     /**
      * Check if the user has a specific role.
      */
-    public function hasRole($role): bool
+    public function hasRole($roleName): bool
     {
-        return $this->role === $role;
+        return $this->role && $this->role->role === $roleName;
+    }
+
+    /**
+     * Check if the user has any of the given roles.
+     */
+    public function hasAnyRole(array $roles): bool
+    {
+        return $this->role && in_array($this->role->role, $roles);
+    }
+
+    /**
+     * Check if user is an admin (superadmin or hr_editor)
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasAnyRole(['superadmin', 'hr_editor']);
+    }
+
+    /**
+     * Check if user can manage projects (create, edit, delete)
+     */
+    public function canManageProjects(): bool
+    {
+        return $this->hasAnyRole(['superadmin', 'hr_editor']);
+    }
+
+    /**
+     * Check if user can manage time entries
+     */
+    public function canManageTimeEntries(): bool
+    {
+        return $this->hasAnyRole(['superadmin', 'hr_editor', 'pointage_editor']);
+    }
+
+    /**
+     * Check if user can view all projects
+     */
+    public function canViewAllProjects(): bool
+    {
+        return $this->hasAnyRole(['superadmin', 'hr_editor', 'technical_director']);
+    }
+
+    /**
+     * Check if the user is a worker (by role)
+     */
+    public function isWorkerRole(): bool
+    {
+        return $this->hasRole(Role::WORKER);
+    }
+
+    /**
+     * The projects that the user is assigned to.
+     */
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_user');
+    }
+
+    /**
+     * Get the user's status.
+     */
+    public function status()
+    {
+        return $this->belongsTo(UserStatus::class, 'user_status_id');
+    }
+
+    /**
+     * Check if the user is active (not on leave, mission, etc.)
+     */
+    public function isActive(): bool
+    {
+        return $this->user_status_id === UserStatus::ACTIVE;
+    }
+
+    /**
+     * Check if the user is on leave
+     */
+    public function isOnLeave(): bool
+    {
+        return $this->user_status_id === UserStatus::LEAVE;
+    }
+
+    /**
+     * Check if the user is a worker
+     */
+    public function isWorker(): bool
+    {
+        return $this->user_status_id === UserStatus::WORKER;
+    }
+
+    /**
+     * Update the user's status to a new value
+     */
+    public function updateStatus(int $statusId): bool
+    {
+        $this->user_status_id = $statusId;
+        return $this->save();
     }
 }

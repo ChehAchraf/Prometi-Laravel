@@ -96,7 +96,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($todayAttendance ?? [] as $attendance)
-                <tr>
+                <tr class="@if($attendance->status !== 'present') bg-red-100 border-l-4 border-red-400 @endif">
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
                             <div class="flex-shrink-0 h-10 w-10">

@@ -3,29 +3,59 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ProjectController extends Controller
 {
+    public function __construct()
+    {
+        // Only authenticated users can access these methods
+        $this->middleware('auth');
+        
+        // Only admins and HR editors can create, edit, and delete projects
+        $this->middleware('role:superadmin,hr_editor')->only(['create', 'store', 'edit', 'update', 'destroy']);
+    }
+    
     /**
-     * Display a listing of the resource.
+     * Display a listing of the projects.
      */
     public function index()
     {
-        $projects = Project::latest()->paginate(10);
+        $user = Auth::user();
+        $userRole = $user->role ? $user->role->role : null;
+        
+        // Superadmins, HR editors, and technical directors can see all projects
+        if ($userRole === Role::SUPERADMIN || $userRole === Role::HR_EDITOR || $userRole === Role::TECHNICAL_DIRECTOR) {
+            $projects = Project::latest()->paginate(10);
+        } else {
+            // Other users can only see projects they're assigned to
+            $projects = Project::whereHas('users', function($query) use ($user) {
+                $query->where('users.id', $user->id);
+            })->latest()->paginate(10);
+        }
+        
         return view('projects.index', compact('projects'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new project.
      */
     public function create()
     {
-        return view('projects.create');
+        // Get chefs de chantier for assignment
+        $chefs = User::whereHas('role', function($query) {
+            $query->where('role', Role::POINTAGE_EDITOR);
+        })->get();
+        
+        return view('projects.create', compact('chefs'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created project in storage.
      */
     public function store(Request $request)
     {
@@ -34,34 +64,72 @@ class ProjectController extends Controller
             'description' => 'nullable|string',
             'location' => 'nullable|string|max:255',
             'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after:start_date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
             'status' => 'required|in:active,completed,on_hold',
+            'chef_id' => 'nullable|exists:users,id',
+            'chef_ids' => 'nullable|array',
+            'chef_ids.*' => 'nullable|exists:users,id',
         ]);
 
-        Project::create($validated);
+        Log::info('Project creation with chef ID: ' . $request->input('chef_id'));
+        Log::info('Project creation with additional chefs: ' . json_encode($request->input('chef_ids')));
+
+        $project = Project::create([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'location' => $validated['location'],
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date'],
+            'status' => $validated['status'],
+            'chef_id' => $validated['chef_id'] ?? null,
+        ]);
+
+        // Assign additional chefs to the project
+        if ($request->has('chef_ids') && is_array($request->chef_ids)) {
+            $project->users()->attach($request->chef_ids);
+        }
 
         return redirect()->route('projects.index')
-            ->with('success', 'Chantier créé avec succès.');
+            ->with('success', 'Project created successfully.');
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified project.
      */
     public function show(Project $project)
     {
+        // Check if user can access this project
+        $user = Auth::user();
+        $userRole = $user->role ? $user->role->role : null;
+        
+        // Check if user has permission to view this project
+        $canViewAll = in_array($userRole, [Role::SUPERADMIN, Role::HR_EDITOR, Role::TECHNICAL_DIRECTOR]);
+        
+        if (!$canViewAll && !$project->users->contains($user->id)) {
+            abort(403, 'You do not have permission to view this project.');
+        }
+        
         return view('projects.show', compact('project'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified project.
      */
     public function edit(Project $project)
     {
-        return view('projects.edit', compact('project'));
+        // Get chefs de chantier for assignment
+        $chefs = User::whereHas('role', function($query) {
+            $query->where('role', Role::POINTAGE_EDITOR);
+        })->get();
+        
+        // Get currently assigned chefs
+        $assignedChefs = $project->users()->pluck('users.id')->toArray();
+        
+        return view('projects.edit', compact('project', 'chefs', 'assignedChefs'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified project in storage.
      */
     public function update(Request $request, Project $project)
     {
@@ -70,24 +138,45 @@ class ProjectController extends Controller
             'description' => 'nullable|string',
             'location' => 'nullable|string|max:255',
             'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after:start_date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
             'status' => 'required|in:active,completed,on_hold',
+            'chef_id' => 'nullable|exists:users,id',
+            'chef_ids' => 'nullable|array',
+            'chef_ids.*' => 'nullable|exists:users,id',
         ]);
 
-        $project->update($validated);
+        Log::info('Project update with chef ID: ' . $request->input('chef_id'));
+        Log::info('Project update with additional chefs: ' . json_encode($request->input('chef_ids')));
+
+        $project->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'location' => $validated['location'],
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date'],
+            'status' => $validated['status'],
+            'chef_id' => $validated['chef_id'] ?? null,
+        ]);
+
+        // Sync additional chefs assigned to the project
+        if ($request->has('chef_ids') && is_array($request->chef_ids)) {
+            $project->users()->sync($request->chef_ids);
+        } else {
+            $project->users()->detach();
+        }
 
         return redirect()->route('projects.index')
-            ->with('success', 'Chantier mis à jour avec succès.');
+            ->with('success', 'Project updated successfully.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified project from storage.
      */
     public function destroy(Project $project)
     {
         $project->delete();
 
         return redirect()->route('projects.index')
-            ->with('success', 'Chantier supprimé avec succès.');
+            ->with('success', 'Project deleted successfully.');
     }
 }

@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'Gestion des Pointages')
+@section('title', 'Time Entry Management')
 
 @section('content')
 <div class="mb-6 flex justify-between items-center">
     <div>
-        <h1 class="text-2xl font-bold text-gray-800">Gestion des Pointages</h1>
-        <p class="text-gray-600">Suivi des pointages des collaborateurs</p>
+        <h1 class="text-2xl font-bold text-gray-800">Time Entry Management</h1>
+        <p class="text-gray-600">Track employee working hours</p>
     </div>
     <a href="{{ route('time-entries.create') }}" class="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
-        <i class="fas fa-plus mr-2"></i>Nouveau Pointage
+        <i class="fas fa-plus mr-2"></i>New Time Entry
     </a>
 </div>
 
@@ -23,9 +23,9 @@
 <div class="bg-white rounded-lg shadow-md p-4 mb-6">
     <form action="{{ route('time-entries.index') }}" method="GET" class="flex flex-wrap items-end gap-4">
         <div class="w-full md:w-auto flex-1">
-            <label for="project_filter" class="block text-sm font-medium text-gray-700 mb-1">Filtrer par Chantier</label>
+            <label for="project_filter" class="block text-sm font-medium text-gray-700 mb-1">Filter by Project</label>
             <select name="project_id" id="project_filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
-                <option value="">Tous les chantiers</option>
+                <option value="">All projects</option>
                 @foreach($projects as $project)
                     <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
                         {{ $project->name }}
@@ -35,11 +35,11 @@
         </div>
         <div class="w-full md:w-auto flex items-end">
             <button type="submit" class="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
-                <i class="fas fa-filter mr-2"></i>Filtrer
+                <i class="fas fa-filter mr-2"></i>Filter
             </button>
             @if(request()->has('project_id') && request('project_id') != '')
                 <a href="{{ route('time-entries.index') }}" class="ml-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                    <i class="fas fa-times mr-2"></i>Réinitialiser
+                    <i class="fas fa-times mr-2"></i>Reset
                 </a>
             @endif
         </div>
@@ -50,11 +50,11 @@
     <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
             <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Collaborateur</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chantier</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Heure d'arrivée</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-in Time</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
         </thead>
@@ -75,7 +75,7 @@
                         <div class="text-sm text-gray-900">{{ $entry->project->name }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">{{ $entry->date->format('d/m/Y') }}</div>
+                        <div class="text-sm text-gray-900">{{ $entry->date->format('Y-m-d') }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-900">{{ $entry->check_in ? $entry->check_in->format('H:i') : '-' }}</div>
@@ -99,7 +99,7 @@
                         <form action="{{ route('time-entries.destroy', $entry) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce pointage ?')">
+                            <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this time entry?')">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </form>
@@ -108,7 +108,7 @@
             @empty
                 <tr>
                     <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                        Aucun pointage trouvé
+                        No time entries found
                     </td>
                 </tr>
             @endforelse
