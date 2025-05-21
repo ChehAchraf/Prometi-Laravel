@@ -238,8 +238,6 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Heures Totales</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Progression</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Statut</th>
                             </tr>
                         </thead>
@@ -267,16 +265,6 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm text-gray-900">{{ $project->total_hours }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2 w-24">
-                                                <div class="bg-primary-600 h-2.5 rounded-full"
-                                                    style="width: {{ $project->progress }}%"></div>
-                                            </div>
-                                            <span
-                                                class="text-sm font-medium text-gray-900">{{ $project->progress }}%</span>
-                                        </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span
