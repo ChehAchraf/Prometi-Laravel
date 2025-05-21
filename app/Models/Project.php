@@ -51,8 +51,17 @@ class Project extends Model
      */
     public function employees(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'project_user')
-                    ->withTimestamps();
+        return $this->belongsToMany(User::class, 'time_entries');
+    }
+
+    public function getTotalHoursAttribute(): float
+    {
+        return $this->timeEntries->sum(function ($entry) {
+            if ($entry->check_out && $entry->check_in) {
+                return round((strtotime($entry->check_out) - strtotime($entry->check_in)) / 3600, 2);
+            }
+            return 0;
+        });
     }
 
     /**
@@ -114,7 +123,7 @@ class Project extends Model
     public function chefs()
     {
         return $this->belongsToMany(User::class, 'project_user')
-            ->whereHas('role', function($query) {
+            ->whereHas('role', function ($query) {
                 $query->where('role', 'pointage_editor');
             });
     }

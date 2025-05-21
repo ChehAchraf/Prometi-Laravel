@@ -21,8 +21,8 @@ class Role extends Model
     public const SUPERADMIN = 'superadmin';
     public const HR_EDITOR = 'hr_editor';
     public const POINTAGE_EDITOR = 'pointage_editor';
-    public const PROJECT_VIEWER = 'project_viewer';
-    public const TECHNICAL_DIRECTOR = 'technical_director';
+    public const MAGASINIER = 'magasinier';
+    public const CHEF_DE_PROJET = 'chef_de_projet';
     public const WORKER = 'worker';
     
     // All available roles
@@ -31,9 +31,9 @@ class Role extends Model
         return [
             self::SUPERADMIN => 'Super Admin',
             self::HR_EDITOR => 'HR Editor',
-            self::POINTAGE_EDITOR => 'Pointage Editor/Chef de Chantier',
-            self::PROJECT_VIEWER => 'Project Viewer',
-            self::TECHNICAL_DIRECTOR => 'Technical Director',
+            self::POINTAGE_EDITOR => 'Pointage Editor',
+            self::MAGASINIER => 'Magasinier',
+            self::CHEF_DE_PROJET => 'Chef de Projet',
             self::WORKER => 'Worker',
         ];
     }

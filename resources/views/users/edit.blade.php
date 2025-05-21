@@ -27,28 +27,28 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="col-span-2 md:col-span-1">
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" class="form-input w-full rounded-md shadow-sm" required>
+                <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" class="form-input border-gray-300 border py-1.5 px-2 w-full rounded-md shadow-sm" required>
             </div>
             
             <div class="col-span-2 md:col-span-1">
                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" class="form-input w-full rounded-md shadow-sm" required>
+                <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" class="form-input border-gray-300 border py-1.5 px-2 w-full rounded-md shadow-sm" required>
             </div>
             
             <div class="col-span-2 md:col-span-1">
                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input type="password" name="password" id="password" class="form-input w-full rounded-md shadow-sm">
+                <input type="password" name="password" id="password" class="form-input w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm">
                 <p class="text-xs text-gray-500 mt-1">Leave blank to keep current password</p>
             </div>
             
             <div class="col-span-2 md:col-span-1">
                 <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                <input type="password" name="password_confirmation" id="password_confirmation" class="form-input w-full rounded-md shadow-sm">
+                <input type="password" name="password_confirmation" id="password_confirmation" class="form-input border-gray-300 border py-1.5 px-2 w-full rounded-md shadow-sm">
             </div>
             
             <div class="col-span-2 md:col-span-1">
                 <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                <select name="role" id="role" class="form-select w-full rounded-md shadow-sm" required>
+                <select name="role" id="role" class="form-select w-full rounded-md shadow-sm border-gray-300 border py-1.5 px-2" required>
                     <option value="">Select a role</option>
                     @foreach($roles as $value => $label)
                         <option value="{{ $value }}" {{ (old('role', $user->role?->role) == $value) ? 'selected' : '' }}>
@@ -61,7 +61,7 @@
             <!-- Status selection -->
             <div class="col-span-2 md:col-span-1">
                 <label for="user_status_id" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                <select name="user_status_id" id="user_status_id" class="form-select w-full rounded-md shadow-sm" required>
+                <select name="user_status_id" id="user_status_id" class="form-select w-full rounded-md shadow-sm border-gray-300 border py-1.5 px-2" required>
                     <option value="">Select a status</option>
                     @foreach($statuses as $id => $name)
                         <option value="{{ $id }}" {{ old('user_status_id', $user->user_status_id) == $id ? 'selected' : '' }}>
@@ -73,12 +73,12 @@
             
             <div class="col-span-2 md:col-span-1">
                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                <input type="text" name="phone" id="phone" value="{{ old('phone', $user->phone) }}" class="form-input w-full rounded-md shadow-sm">
+                <input type="text" name="phone" id="phone" value="{{ old('phone', $user->phone) }}" class="form-input w-full rounded-md shadow-sm border-gray-300 border py-1.5 px-2">
             </div>
             
             <div class="col-span-2">
                 <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                <textarea name="address" id="address" rows="3" class="form-textarea w-full rounded-md shadow-sm">{{ old('address', $user->address) }}</textarea>
+                <textarea name="address" id="address" rows="3" class="form-textarea w-full rounded-md shadow-sm border-gray-300 border py-1.5">{{ old('address', $user->address) }}</textarea>
             </div>
         </div>
         

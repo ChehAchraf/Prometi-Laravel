@@ -74,11 +74,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user is an admin (superadmin or hr_editor)
+     * Check if user is an admin (superadmin)
      */
     public function isAdmin(): bool
     {
-        return $this->hasAnyRole(['superadmin', 'hr_editor']);
+        return $this->hasRole('superadmin');
     }
 
     /**
@@ -94,7 +94,7 @@ class User extends Authenticatable
      */
     public function canManageTimeEntries(): bool
     {
-        return $this->hasAnyRole(['superadmin', 'hr_editor', 'pointage_editor']);
+        return $this->hasAnyRole(['superadmin', 'hr_editor', 'pointage_editor', 'magasinier']);
     }
 
     /**
@@ -102,7 +102,7 @@ class User extends Authenticatable
      */
     public function canViewAllProjects(): bool
     {
-        return $this->hasAnyRole(['superadmin', 'hr_editor', 'technical_director']);
+        return $this->hasAnyRole(['superadmin', 'hr_editor', 'chef_de_projet']);
     }
 
     /**
@@ -111,6 +111,30 @@ class User extends Authenticatable
     public function isWorkerRole(): bool
     {
         return $this->hasRole(Role::WORKER);
+    }
+    
+    /**
+     * Check if user can manage users (create, edit, delete)
+     */
+    public function canManageUsers(): bool
+    {
+        return $this->hasAnyRole(['superadmin', 'hr_editor']);
+    }
+    
+    /**
+     * Check if user can view reports
+     */
+    public function canViewReports(): bool
+    {
+        return $this->hasAnyRole(['superadmin', 'hr_editor', 'chef_de_projet']);
+    }
+    
+    /**
+     * Check if user can assign users to projects
+     */
+    public function canAssignUsersToProjects(): bool
+    {
+        return $this->hasAnyRole(['superadmin', 'hr_editor']);
     }
 
     /**

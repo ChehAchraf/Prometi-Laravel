@@ -44,7 +44,7 @@
             <div class="mb-4">
                 <label for="name" class="block text-sm font-medium text-gray-700">Nom du chantier</label>
                 <input type="text" name="name" id="name" value="{{ old('name', $project->name) }}" required
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                    class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                 @error('name')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -53,7 +53,7 @@
             <div class="mb-4">
                 <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
                 <textarea name="description" id="description" rows="3" required
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">{{ old('description', $project->description) }}</textarea>
+                    class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">{{ old('description', $project->description) }}</textarea>
                 @error('description')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -62,7 +62,7 @@
             <div class="mb-4">
                 <label for="location" class="block text-sm font-medium text-gray-700">Localisation</label>
                 <input type="text" name="location" id="location" value="{{ old('location', $project->location) }}" required
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                    class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                 @error('location')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -72,7 +72,7 @@
                 <div class="mb-4">
                     <label for="start_date" class="block text-sm font-medium text-gray-700">Date de début</label>
                     <input type="date" name="start_date" id="start_date" value="{{ old('start_date', $project->start_date->format('Y-m-d')) }}" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                        class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                     @error('start_date')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -81,7 +81,7 @@
                 <div class="mb-4">
                     <label for="end_date" class="block text-sm font-medium text-gray-700">Date de fin</label>
                     <input type="date" name="end_date" id="end_date" value="{{ old('end_date', $project->end_date ? $project->end_date->format('Y-m-d') : '') }}"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                        class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                     @error('end_date')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -91,7 +91,7 @@
             <div class="mb-4">
                 <label for="status" class="block text-sm font-medium text-gray-700">Statut</label>
                 <select name="status" id="status" required
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                    class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                     <option value="">Sélectionner un statut</option>
                     <option value="active" {{ old('status', $project->status) == 'active' ? 'selected' : '' }}>En cours</option>
                     <option value="completed" {{ old('status', $project->status) == 'completed' ? 'selected' : '' }}>Terminé</option>
@@ -108,7 +108,7 @@
                 <div class="relative">
                     <input type="text" id="chef_search" 
                         placeholder="Rechercher un chef de chantier principal..."
-                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                        class="block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                     
                     <!-- Search Results -->
                     <div id="chef_search_results" class="absolute left-0 z-50 w-full bg-white mt-1 rounded-md shadow-lg border overflow-y-auto max-h-60 hidden">
@@ -133,7 +133,7 @@
                 <div class="relative">
                     <input type="text" id="additional_chef_search" 
                         placeholder="Rechercher des chefs de chantier supplémentaires..."
-                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                        class="block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                     
                     <!-- Search Results -->
                     <div id="additional_chef_search_results" class="absolute left-0 z-50 w-full bg-white mt-1 rounded-md shadow-lg border overflow-y-auto max-h-60 hidden">

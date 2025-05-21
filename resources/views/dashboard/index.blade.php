@@ -99,9 +99,6 @@
                 <tr class="@if($attendance->status !== 'present') bg-red-100 border-l-4 border-red-400 @endif">
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
-                            <div class="flex-shrink-0 h-10 w-10">
-                                <img class="h-10 w-10 rounded-full" src="{{ $attendance->user->avatar }}" alt="">
-                            </div>
                             <div class="ml-4">
                                 <div class="text-sm font-medium text-gray-900">{{ $attendance->user->name }}</div>
                             </div>

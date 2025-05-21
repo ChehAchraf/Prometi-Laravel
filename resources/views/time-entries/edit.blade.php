@@ -9,15 +9,17 @@
         <p class="text-gray-600">Modifier les informations du pointage</p>
     </div>
 
+
     <div class="bg-white rounded-lg shadow-md p-6">
         <form action="{{ route('time-entries.update', $timeEntry) }}" method="POST">
             @csrf
             @method('PUT')
+            <input type="hidden" name="user_id" value="{{ $timeEntry->user_id }}">
             
             <div class="mb-4">
                 <label for="project_id" class="block text-sm font-medium text-gray-700">Chantier</label>
                 <select name="project_id" id="project_id" required
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                    class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                     <option value="">Sélectionner un chantier</option>
                     @foreach($projects as $project)
                         <option value="{{ $project->id }}" {{ old('project_id', $timeEntry->project_id) == $project->id ? 'selected' : '' }}>
@@ -33,7 +35,7 @@
             <div class="mb-4">
                 <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
                 <input type="date" name="date" id="date" value="{{ old('date', $timeEntry->date->format('Y-m-d')) }}" required
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                    class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                 @error('date')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -43,7 +45,7 @@
                 <div class="mb-4">
                     <label for="check_in" class="block text-sm font-medium text-gray-700">Heure d'entrée</label>
                     <input type="time" name="check_in" id="check_in" value="{{ old('check_in', $timeEntry->check_in ? $timeEntry->check_in->format('H:i') : '') }}" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                        class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                     @error('check_in')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -52,7 +54,7 @@
                 <div class="mb-4">
                     <label for="check_out" class="block text-sm font-medium text-gray-700">Heure de sortie</label>
                     <input type="time" name="check_out" id="check_out" value="{{ old('check_out', $timeEntry->check_out ? $timeEntry->check_out->format('H:i') : '') }}"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                        class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                     @error('check_out')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -62,7 +64,7 @@
             <div class="mb-4">
                 <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
                 <textarea name="notes" id="notes" rows="3"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">{{ old('notes', $timeEntry->notes) }}</textarea>
+                    class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">{{ old('notes', $timeEntry->notes) }}</textarea>
                 @error('notes')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -71,13 +73,26 @@
             <div class="mb-4">
                 <label for="status" class="block text-sm font-medium text-gray-700">Statut</label>
                 <select name="status" id="status" required
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                    class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                     <option value="">Sélectionner un statut</option>
                     <option value="present" {{ old('status', $timeEntry->status) == 'present' ? 'selected' : '' }}>Présent</option>
                     <option value="absent" {{ old('status', $timeEntry->status) == 'absent' ? 'selected' : '' }}>Absent</option>
                     <option value="late" {{ old('status', $timeEntry->status) == 'late' ? 'selected' : '' }}>En retard</option>
                 </select>
                 @error('status')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-4">
+                <label for="jour_type" class="block text-sm font-medium text-gray-700">Jour type</label>
+                <select name="jour_type" id="jour_type" required
+                    class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                    <option value="">Sélectionner un type</option>
+                    <option value="normal" {{ old('jour_type', $timeEntry->jour_type) == 'normal' ? 'selected' : '' }}>normal</option>
+                    <option value="férié" {{ old('jour_type', $timeEntry->jour_type) == 'férié' ? 'selected' : '' }}>férié</option>
+                </select>
+                @error('jour_type')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>

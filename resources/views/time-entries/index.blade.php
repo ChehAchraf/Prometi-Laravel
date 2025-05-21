@@ -24,7 +24,7 @@
     <form action="{{ route('time-entries.index') }}" method="GET" class="flex flex-wrap items-end gap-4">
         <div class="w-full md:w-auto flex-1">
             <label for="project_filter" class="block text-sm font-medium text-gray-700 mb-1">Filtrer par Chantier</label>
-            <select name="project_id" id="project_filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+            <select name="project_id" id="project_filter" class="mt-1 block w-full rounded-md border-gray-300 border py-1.5 px-2 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                 <option value="">Tous les chantiers</option>
                 @foreach($projects as $project)
                     <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
@@ -55,6 +55,7 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Heure d'arrivée</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">jour type</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
         </thead>
@@ -88,6 +89,9 @@
                             @else bg-orange-100 text-orange-800 @endif">
                             {{ ucfirst($entry->status) }}
                         </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">{{ $entry->jour_type }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <a href="{{ route('time-entries.show', $entry) }}" class="text-primary-600 hover:text-primary-900 mr-3">

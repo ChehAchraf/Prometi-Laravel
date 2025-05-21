@@ -16,8 +16,13 @@ class ProjectController extends Controller
         // Only authenticated users can access these methods
         $this->middleware('auth');
         
-        // Only admins and HR editors can create, edit, and delete projects
-        $this->middleware('role:superadmin,hr_editor')->only(['create', 'store', 'edit', 'update', 'destroy']);
+        // Only superadmin and hr_editor can create, edit, and delete projects
+        $this->middleware(function ($request, $next) {
+            if (!auth()->user()->canManageProjects()) {
+                abort(403, 'Unauthorized action.');
+            }
+            return $next($request);
+        })->only(['create', 'store', 'edit', 'update', 'destroy']);
     }
     
     /**
@@ -28,8 +33,8 @@ class ProjectController extends Controller
         $user = Auth::user();
         $userRole = $user->role ? $user->role->role : null;
         
-        // Superadmins, HR editors, and technical directors can see all projects
-        if ($userRole === Role::SUPERADMIN || $userRole === Role::HR_EDITOR || $userRole === Role::TECHNICAL_DIRECTOR) {
+        // Superadmins, HR editors, and chef_de_projet can see all projects
+        if ($user->canViewAllProjects()) {
             $projects = Project::latest()->paginate(10);
         } else {
             // Other users can only see projects they're assigned to
@@ -103,7 +108,7 @@ class ProjectController extends Controller
         $userRole = $user->role ? $user->role->role : null;
         
         // Check if user has permission to view this project
-        $canViewAll = in_array($userRole, [Role::SUPERADMIN, Role::HR_EDITOR, Role::TECHNICAL_DIRECTOR]);
+        $canViewAll = $user->canViewAllProjects();
         
         if (!$canViewAll && !$project->users->contains($user->id)) {
             abort(403, 'You do not have permission to view this project.');
@@ -117,9 +122,9 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        // Get chefs de chantier for assignment
+        // Get pointage editors and magasiniers for assignment
         $chefs = User::whereHas('role', function($query) {
-            $query->where('role', Role::POINTAGE_EDITOR);
+            $query->whereIn('role', [Role::POINTAGE_EDITOR, Role::MAGASINIER]);
         })->get();
         
         // Get currently assigned chefs

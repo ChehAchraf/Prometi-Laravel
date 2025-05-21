@@ -21,7 +21,8 @@ class TimeEntry extends Model
         'total_hours',
         'overtime_hours',
         'status',
-        'notes'
+        'notes',
+        'jour_type'
     ];
 
     protected $casts = [
@@ -60,7 +61,7 @@ class TimeEntry extends Model
     {
         $checkIn = Carbon::parse($this->check_in);
         $checkOut = Carbon::parse($this->check_out);
-        
+
         // Calculate total hours worked
         $totalHours = $checkOut->floatDiffInHours($checkIn);
         $this->total_hours = round($totalHours, 2);
@@ -106,7 +107,7 @@ class TimeEntry extends Model
 
     public function getStatusBadgeClass(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'present' => 'success',
             'absent' => 'danger',
             'late' => 'warning',
@@ -116,7 +117,7 @@ class TimeEntry extends Model
 
     public function getStatusLabel(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'present' => 'Present',
             'absent' => 'Absent',
             'late' => 'Late',
